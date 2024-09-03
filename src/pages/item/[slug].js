@@ -15,6 +15,8 @@ import {
   getDataByCategory,
 } from '../../lib/cosmic'
 import getStripe from '../../lib/getStripe'
+import { useTranslation } from 'react-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
 import styles from '../../styles/pages/Item.module.sass'
 
@@ -41,7 +43,7 @@ const Item = ({ itemInfo, categoriesGroup, navigationItems }) => {
 
       if (!user && !user?.hasOwnProperty('id')) return
     },
-    [cosmicUser]
+    [cosmicUser],
   )
 
   const handleCheckout = async () => {
@@ -111,7 +113,7 @@ const Item = ({ itemInfo, categoriesGroup, navigationItems }) => {
                 <button
                   className={cn(
                     { [styles.active]: index === activeIndex },
-                    styles.link
+                    styles.link,
                   )}
                   onClick={() => setActiveIndex(index)}
                   key={index}
@@ -162,7 +164,7 @@ const Item = ({ itemInfo, categoriesGroup, navigationItems }) => {
 
 export default Item
 
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({ params, locale }) {
   const itemInfo = await getDataBySlug(params.slug)
 
   const navigationItems = (await getAllDataByType('navigation')) || []
@@ -170,7 +172,7 @@ export async function getServerSideProps({ params }) {
   const categoriesData = await Promise.all(
     categoryTypes?.map(category => {
       return getDataByCategory(category?.id)
-    })
+    }),
   )
 
   const categoriesGroups = categoryTypes?.map(({ id }, index) => {
@@ -190,6 +192,11 @@ export async function getServerSideProps({ params }) {
   }
 
   return {
-    props: { itemInfo, navigationItems, categoriesGroup },
+    props: {
+      itemInfo,
+      navigationItems,
+      categoriesGroup,
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
   }
 }

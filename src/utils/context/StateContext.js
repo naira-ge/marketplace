@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react'
+import { createContext, useContext, useState, useCallback } from 'react'
 import { toast } from 'react-hot-toast'
 
 const Context = createContext()
@@ -59,10 +53,10 @@ export const StateContext = ({ children }) => {
 
     setTotalPrice(
       prevTotalPrice =>
-        prevTotalPrice - foundProduct.price * foundProduct.quantity
+        prevTotalPrice - foundProduct.price * foundProduct.quantity,
     )
     setTotalQuantities(
-      prevTotalQuantities => prevTotalQuantities - foundProduct.quantity
+      prevTotalQuantities => prevTotalQuantities - foundProduct.quantity,
     )
     setCartItems(newCartItems)
   }

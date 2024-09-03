@@ -9,6 +9,7 @@ import Modal from '../Modal'
 import OAuth from '../OAuth'
 import { useStateContext } from '../../utils/context/StateContext'
 import { getToken } from '../../utils/token'
+import LanguageSwitcher from './LanguageSwitcher'
 
 import styles from './Header.module.sass'
 
@@ -24,7 +25,7 @@ const Headers = ({ navigation }) => {
         user?.hasOwnProperty('id') &&
         setCosmicUser(user)
     },
-    [cosmicUser, setCosmicUser]
+    [cosmicUser, setCosmicUser],
   )
 
   useEffect(() => {
@@ -52,7 +53,7 @@ const Headers = ({ navigation }) => {
             <Image
               width={256}
               height={120}
-              objectFit='contain'
+              objectFit="contain"
               className={styles.pic}
               src={navigation['logo']?.imgix_url}
               alt="Logo"
@@ -76,6 +77,7 @@ const Headers = ({ navigation }) => {
           <div className={styles.version}>
             <Theme className="theme-big" />
           </div>
+          <LanguageSwitcher />
           <AppLink
             aria-label="search"
             aria-hidden="true"
@@ -90,7 +92,6 @@ const Headers = ({ navigation }) => {
           ) : (
             <button
               aria-label="login"
-              aria-hidden="true"
               className={cn('button-small', styles.button, styles.login)}
               onClick={() => setVisibleAuthModal(true)}
             >
@@ -99,7 +100,6 @@ const Headers = ({ navigation }) => {
           )}
           <button
             aria-label="user-information"
-            aria-hidden="true"
             className={cn(styles.burger, { [styles.active]: visibleNav })}
             onClick={() => setVisibleNav(!visibleNav)}
           />

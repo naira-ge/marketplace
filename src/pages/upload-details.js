@@ -16,9 +16,11 @@ import { getAllDataByType } from '../lib/cosmic'
 import { OPTIONS } from '../utils/constants/appConstants'
 import createFields from '../utils/constants/createFields'
 import { getToken } from '../utils/token'
+import { PageMeta } from '../components/Meta'
+import { useTranslation } from 'react-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
 import styles from '../styles/pages/UploadDetails.module.sass'
-import { PageMeta } from '../components/Meta'
 
 const Upload = ({ navigationItems, categoriesType }) => {
   const { categories, navigation, cosmicUser } = useStateContext()
@@ -30,7 +32,7 @@ const Upload = ({ navigationItems, categoriesType }) => {
   const [chooseCategory, setChooseCategory] = useState('')
   const [fillFiledMessage, setFillFiledMessage] = useState(false)
   const [{ title, count, description, price }, setFields] = useState(
-    () => createFields
+    () => createFields,
   )
 
   const [visibleAuthModal, setVisibleAuthModal] = useState(false)
@@ -74,7 +76,7 @@ const Upload = ({ navigationItems, categoriesType }) => {
       if (!user && !user?.hasOwnProperty('id')) return
       user && uploadFile && (await handleUploadFile(uploadFile))
     },
-    [cosmicUser, uploadFile]
+    [cosmicUser, uploadFile],
   )
 
   const handleUpload = async e => {
@@ -136,7 +138,7 @@ const Upload = ({ navigationItems, categoriesType }) => {
             `Successfully created ${createdItem['object']['title']} item`,
             {
               position: 'bottom-right',
-            }
+            },
           )
 
           push(`item/${createdItem['object']['slug']}`)
@@ -157,7 +159,7 @@ const Upload = ({ navigationItems, categoriesType }) => {
       push,
       title,
       uploadMedia,
-    ]
+    ],
   )
 
   return (
@@ -321,7 +323,7 @@ const Upload = ({ navigationItems, categoriesType }) => {
 
 export default Upload
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ locale }) {
   const navigationItems = (await getAllDataByType('navigation')) || []
   const categoryTypes = (await getAllDataByType('categories')) || []
 
@@ -330,6 +332,10 @@ export async function getServerSideProps() {
   }, {})
 
   return {
-    props: { navigationItems, categoriesType },
+    props: {
+      navigationItems,
+      categoriesType,
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
   }
 }

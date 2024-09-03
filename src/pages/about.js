@@ -1,17 +1,19 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import cn from 'classnames'
-import { useStateContext } from '../utils/context/StateContext'
+import { useTranslation } from 'react-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import Layout from '../components/Layout'
 import Image from 'next/image'
 import chooseBySlug from '../utils/chooseBySlug'
 import { getAllDataByType } from '../lib/cosmic'
+import { PageMeta } from '../components/Meta'
 
 import styles from '../styles/pages/NotFound.module.sass'
-import { PageMeta } from '../components/Meta'
 
 const AboutUs = ({ navigationItems, landing }) => {
   const { push } = useRouter()
+  const { t } = useTranslation('common')
 
   const handleClick = href => {
     push(href)
@@ -22,10 +24,11 @@ const AboutUs = ({ navigationItems, landing }) => {
   return (
     <Layout navigationPaths={navigationItems[0]?.metadata}>
       <PageMeta
-        title={'About | uNFT Marketplace'}
-        description={
-          'uNFT Marketplace built with Cosmic CMS, Next.js, and the Stripe API'
-        }
+        title={t('aboutPage.pageTitle', 'About | uNFT Marketplace')}
+        description={t(
+          'aboutPage.pageDescription',
+          'uNFT Marketplace built with Cosmic CMS, Next.js, and the Stripe API',
+        )}
       />
       <div className={cn('section', styles.section)}>
         <div className={cn('container', styles.container)}>
@@ -50,8 +53,9 @@ const AboutUs = ({ navigationItems, landing }) => {
             <button
               onClick={() => handleClick(`/search`)}
               className={cn('button-stroke', styles.form)}
+              suppressHydrationWarning
             >
-              Start your search
+              {t('buttons.startSearchButton', 'Start your search')}
             </button>
           </div>
         </div>
@@ -62,11 +66,15 @@ const AboutUs = ({ navigationItems, landing }) => {
 
 export default AboutUs
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ locale }) {
   const navigationItems = (await getAllDataByType('navigation')) || []
-  const landing = (await getAllDataByType('landings')) || []
+  const landing = (await getAllDataByType(`landings-${locale}`)) || []
 
   return {
-    props: { navigationItems, landing },
+    props: {
+      navigationItems,
+      landing,
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
   }
 }

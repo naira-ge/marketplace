@@ -1,6 +1,6 @@
 import { Toaster } from 'react-hot-toast'
 import { StateContext } from '../utils/context/StateContext'
-
+import { appWithTranslation } from 'next-i18next'
 import '../styles/app.sass'
 
 function MyApp({ Component, pageProps }) {
@@ -12,4 +12,4 @@ function MyApp({ Component, pageProps }) {
   )
 }
 
-export default MyApp
+export default appWithTranslation(MyApp)

@@ -1,0 +1,12 @@
+{
+  "notFound": {
+    "title": "Извините, мы не смогли найти результаты по этому запросу.",
+    "info": "Может быть, попробуйте одно из следующих?",
+    "button": "Начните поиск"
+  },
+  "aboutPage":{
+  "pageTitle": "О нас",
+  "pageDescription": "uNFT Marketplace, построенный на Cosmic CMS, Next.js и Stripe API"
+  },
+  "buttons":{"startSearchButton": "Начните поиск"}
+}

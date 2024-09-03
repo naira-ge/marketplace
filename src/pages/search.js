@@ -13,16 +13,19 @@ import Dropdown from '../components/Dropdown'
 import priceRange from '../utils/constants/priceRange'
 import handleQueryParams from '../utils/queryParams'
 import { OPTIONS } from '../utils/constants/appConstants'
+import { useTranslation } from 'react-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { PageMeta } from '../components/Meta'
 
 import styles from '../styles/pages/Search.module.sass'
-import { PageMeta } from '../components/Meta'
 
 const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
   const { query, push } = useRouter()
   const { categories } = useStateContext()
+  const { t } = useTranslation('common')
 
   const { data: searchResult, fetchData } = useFetchData(
-    categoryData?.length ? categoryData : []
+    categoryData?.length ? categoryData : [],
   )
 
   const categoriesTypeData = categoriesGroup['type'] || categories['type']
@@ -33,14 +36,12 @@ const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
   const [{ min, max }, setRangeValues] = useState(
     query['min'] || query['max']
       ? { min: query['min'] || 1, max: query['max'] || 100000 }
-      : priceRange
+      : priceRange,
   )
   const debouncedMinTerm = useDebounce(min, 600)
   const debouncedMaxTerm = useDebounce(max, 600)
 
-  const [activeIndex, setActiveIndex] = useState(
-    query['category'] || ''
-  )
+  const [activeIndex, setActiveIndex] = useState(query['category'] || '')
   const [option, setOption] = useState(query['color'] || OPTIONS[0])
 
   const handleChange = ({ target: { name, value } }) => {
@@ -72,12 +73,12 @@ const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
           query: params,
         },
         undefined,
-        { shallow: true }
+        { shallow: true },
       )
 
       const filterParam = Object.keys(params).reduce(
         (acc, key) => acc + `&${key}=` + `${params[key]}`,
-        ''
+        '',
       )
 
       await fetchData(`/api/filter?${filterParam}`)
@@ -90,7 +91,7 @@ const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
       fetchData,
       option,
       push,
-    ]
+    ],
   )
 
   const getDataByFilterOptions = useCallback(
@@ -98,7 +99,7 @@ const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
       setOption(color)
       handleFilterDataByParams({ color })
     },
-    [handleFilterDataByParams]
+    [handleFilterDataByParams],
   )
 
   const handleCategoryChange = useCallback(
@@ -106,7 +107,7 @@ const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
       setActiveIndex(category)
       handleFilterDataByParams({ category })
     },
-    [handleFilterDataByParams]
+    [handleFilterDataByParams],
   )
 
   const handleSubmit = e => {
@@ -136,7 +137,6 @@ const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
     return () => {
       isMount = false
     }
-
   }, [debouncedSearchTerm, debouncedMinTerm, debouncedMaxTerm])
 
   return (
@@ -253,14 +253,14 @@ const Search = ({ categoriesGroup, navigationItems, categoryData }) => {
 
 export default Search
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps({ query, locale }) {
   const navigationItems = (await getAllDataByType('navigation')) || []
 
   const categoryTypes = (await getAllDataByType('categories')) || []
   const categoriesData = await Promise.all(
     categoryTypes?.map(category => {
       return getDataByCategory(category?.id)
-    })
+    }),
   )
 
   const categoryData = query?.hasOwnProperty('category')
@@ -278,6 +278,11 @@ export async function getServerSideProps({ query }) {
   const categoriesGroup = { groups: categoriesGroups, type: categoriesType }
 
   return {
-    props: { navigationItems, categoriesGroup, categoryData },
+    props: {
+      navigationItems,
+      categoriesGroup,
+      categoryData,
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
   }
 }

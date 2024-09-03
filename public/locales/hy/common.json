@@ -1,0 +1,12 @@
+{
+  "notFound": {
+    "title": "Կներեք, մենք չգտանք որոնման արդյունքներ:",
+    "info": "Գուցե փորձեք այս մեկը?",
+    "button": "Սկսեք ձեր որոնումը"
+  },
+    "aboutPage":{
+    "pageTitle": "Մեր մասին",
+    "pageDescription": "uNFT Marketplace, կառուցված Cosmic CMS-ի, Next.js-ի և Stripe API-ի վրա"
+  },
+    "buttons":{"startSearchButton": "Սկսեք ձեր որոնումը"}
+}

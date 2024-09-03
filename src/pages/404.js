@@ -4,11 +4,14 @@ import cn from 'classnames'
 import Layout from '../components/Layout'
 import Image from '../components/Image'
 import { getAllDataByType } from '../lib/cosmic'
+import { useTranslation } from 'react-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
 import styles from '../styles/pages/NotFound.module.sass'
 
 const NotFound = ({ navigationItems }) => {
   const { push } = useRouter()
+  const { t } = useTranslation('common')
 
   const handleClick = href => {
     push(href)
@@ -28,14 +31,19 @@ const NotFound = ({ navigationItems }) => {
               />
             </div>
             <h2 className={cn('h2', styles.title)}>
-              Sorry, we couldn’t find any results for this search.
+              {t(
+                'notFound.title',
+                'Sorry, we couldn’t find any results for this search.',
+              )}
             </h2>
-            <div className={styles.info}>Maybe give one of these a try?</div>
+            <div className={styles.info}>
+              {t('notFound.info', 'Maybe give one of these a try?')}
+            </div>
             <button
               onClick={() => handleClick(`/search`)}
               className={cn('button-stroke', styles.form)}
             >
-              Start your search
+              {t('notFound.button', 'Start your search')}
             </button>
           </div>
         </div>
@@ -46,10 +54,13 @@ const NotFound = ({ navigationItems }) => {
 
 export default NotFound
 
-export async function getStaticProps() {
+export async function getStaticProps({ locale }) {
   const navigationItems = (await getAllDataByType('navigation')) || []
 
   return {
-    props: { navigationItems },
+    props: {
+      navigationItems,
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
   }
 }

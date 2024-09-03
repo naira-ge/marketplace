@@ -12,6 +12,8 @@ import {
 } from '../screens/Home'
 import chooseBySlug from '../utils/chooseBySlug'
 import { getDataByCategory, getAllDataByType } from '../lib/cosmic'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useTranslation } from 'react-i18next'
 
 const Home = ({
   reviews,
@@ -21,13 +23,14 @@ const Home = ({
   navigationItems,
 }) => {
   const { categories, onCategoriesChange, setNavigation } = useStateContext()
+  const { t } = useTranslation('common')
 
   const handleContextAdd = useCallback(
     (category, data, navigation) => {
       onCategoriesChange({ groups: category, type: data })
       setNavigation(navigation)
     },
-    [onCategoriesChange, setNavigation]
+    [onCategoriesChange, setNavigation],
   )
 
   useEffect(() => {
@@ -37,7 +40,7 @@ const Home = ({
       handleContextAdd(
         categoriesGroup?.groups,
         categoriesGroup?.type,
-        navigationItems[0]?.metadata
+        navigationItems[0]?.metadata,
       )
     }
 
@@ -73,14 +76,14 @@ const Home = ({
 
 export default Home
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ locale }) {
   const reviews = (await getAllDataByType('reviews')) || []
-  const landing = (await getAllDataByType('landings')) || []
+  const landing = (await getAllDataByType(`landings-${locale}`)) || []
   const categoryTypes = (await getAllDataByType('categories')) || []
   const categoriesData = await Promise.all(
     categoryTypes?.map(category => {
       return getDataByCategory(category?.id)
-    })
+    }),
   )
   const navigationItems = (await getAllDataByType('navigation')) || []
 
@@ -101,6 +104,7 @@ export async function getServerSideProps() {
       categoriesGroup,
       categoryTypes,
       navigationItems,
+      ...(await serverSideTranslations(locale, ['common'])),
     },
   }
 }
